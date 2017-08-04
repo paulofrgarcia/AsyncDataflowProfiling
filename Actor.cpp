@@ -1,5 +1,8 @@
 #include<iostream>
 #include<string>
+#include<map>
+#include<random>
+#include<iomanip>
 
 
 using namespace std;
@@ -31,6 +34,15 @@ class InPort
 class Action
 {
 	private:
+	int latency;
+	int tokensIn;
+	int tokensOut;
+
+	std::random_device rd;
+	std::mt19937 gen();
+	std::poisson_distribution<> latency_gen;
+	std::poisson_distribution<> tokensIn_gen;
+	std::poisson_distribution<> tokensOut_gen;
 
 	public:
 };
@@ -38,7 +50,7 @@ class Action
 class Actor
 {
 	private:
-	String name;
+	string name;
 
 
 	//Number of input ports is limited to 4, as that suffices for our experiments
@@ -48,7 +60,7 @@ class Actor
 
 	public:
 
-	Actor(String n)
+	Actor(string n)
 	{
 		name=n;
 		for(int i=0;i<4;i++)
@@ -72,7 +84,7 @@ class Actor
 	int peekTokens(int p)
 	{
 		if(p<4)
-			return ports[p].peekTokens(t);
+			return ports[p].peekTokens();
 		else
 		{
 			cout << "Error: request for non-existent port in actor " << name << "\n";
