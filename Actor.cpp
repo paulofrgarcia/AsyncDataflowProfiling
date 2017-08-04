@@ -45,7 +45,9 @@ class Action
 	Actor *target;
 
 	std::random_device *rd;
-	std::mt19937 *gen;
+	std::mt19937 *genl;
+	std::mt19937 *genI;
+	std::mt19937 *genO;
 	std::poisson_distribution<> *latency_gen;
 	std::poisson_distribution<> *tokensIn_gen;
 	std::poisson_distribution<> *tokensOut_gen;
@@ -56,24 +58,32 @@ class Action
 		target=a;
 
 		rd = new std::random_device;
-		gen = new std::mt19937((*rd)());
+		genl = new std::mt19937((*rd)());
+		genI = new std::mt19937((*rd)());
+		genO = new std::mt19937((*rd)());
 
 		latency_gen = new std::poisson_distribution<>(l);
 		tokensIn_gen = new std::poisson_distribution<>(in);
 		tokensOut_gen = new std::poisson_distribution<>(out);
 
-		latency=(*latency_gen)(*gen);
-		tokensIn=(*tokensIn_gen)(*gen);
-		tokensOut=(*tokensOut_gen)(*gen);
+		latency=(*latency_gen)(*genl);
+		tokensIn=(*tokensIn_gen)(*genI);
+		tokensOut=(*tokensOut_gen)(*genO);
 	}
 	
 	//returns TRUE if latency is 0
 	bool ready()
 	{
 		if(latency==0)
+		{
+			cout << "Ready\n";
 			return true;
+		}
 		else
+		{
+			cout << "Not ready: latency " << latency << "\n";
 			return false;
+		}
 	}
 
 	//decreases latency
@@ -85,11 +95,24 @@ class Action
 	//returns number of required input tokens
 	int requiredTokens()	
 	{
+		cout << "Require " << tokensIn << " tokens\n";
 		return tokensIn;
 	}
 
 	void trigger()
-	{}	
+	{
+		//If target is NULL, then it's output port
+		if(target)
+		{
+		}
+		else
+		{
+			cout << "Output " << tokensOut << "\n"; 
+		}
+		latency=(*latency_gen)(*genl);
+		tokensIn=(*tokensIn_gen)(*genI);
+		tokensOut=(*tokensOut_gen)(*genO);
+	}	
 
 };
 
@@ -181,6 +204,27 @@ class Actor
 
 
 
+int main()
+{
+	//Creates dataflow network
+	Actor a("first");
+
+	Action *act = new Action(1,1,1,NULL);
+
+	a.addAction(act,0);
+	a.run();
+	a.run();
+	a.run();
+	a.run();
+
+
+
+	//Other stuff
+
+
+
+	return 0;
+}
 
 
 

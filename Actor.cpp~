@@ -63,15 +63,23 @@ class Action
 		tokensOut_gen = new std::poisson_distribution<>(out);
 
 		latency=(*latency_gen)(*gen);
+		tokensIn=(*tokensIn_gen)(*gen);
+		tokensOut=(*tokensOut_gen)(*gen);
 	}
 	
 	//returns TRUE if latency is 0
 	bool ready()
 	{
 		if(latency==0)
+		{
+			cout << "Ready\n";
 			return true;
+		}
 		else
+		{
+			cout << "Not ready: latency " << latency << "\n";
 			return false;
+		}
 	}
 
 	//decreases latency
@@ -83,11 +91,24 @@ class Action
 	//returns number of required input tokens
 	int requiredTokens()	
 	{
+		cout << "Require " << tokensIn << " tokens\n";
 		return tokensIn;
 	}
 
 	void trigger()
-	{}	
+	{
+		//If target is NULL, then it's output port
+		if(target)
+		{
+		}
+		else
+		{
+			cout << "Output " << tokensOut << "\n"; 
+		}
+		latency=(*latency_gen)(*gen);
+		tokensIn=(*tokensIn_gen)(*gen);
+		tokensOut=(*tokensOut_gen)(*gen);
+	}	
 
 };
 
@@ -179,6 +200,27 @@ class Actor
 
 
 
+int main()
+{
+	//Creates dataflow network
+	Actor a("first");
+
+	Action *act = new Action(1,1,1,NULL);
+
+	a.addAction(act,0);
+	a.run();
+	a.run();
+	a.run();
+	a.run();
+
+
+
+	//Other stuff
+
+
+
+	return 0;
+}
 
 
 
