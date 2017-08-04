@@ -7,6 +7,11 @@
 
 using namespace std;
 
+
+class Action;
+class Actor;
+
+
 class InPort
 {
 	private:
@@ -37,14 +42,53 @@ class Action
 	int latency;
 	int tokensIn;
 	int tokensOut;
+	Actor *target;
 
-	std::random_device rd;
-	std::mt19937 gen();
-	std::poisson_distribution<> latency_gen;
-	std::poisson_distribution<> tokensIn_gen;
-	std::poisson_distribution<> tokensOut_gen;
+	std::random_device *rd;
+	std::mt19937 *gen;
+	std::poisson_distribution<> *latency_gen;
+	std::poisson_distribution<> *tokensIn_gen;
+	std::poisson_distribution<> *tokensOut_gen;
 
 	public:
+	Action(int l, int in, int out, Actor *a)
+	{
+		target=a;
+
+		rd = new std::random_device;
+		gen = new std::mt19937((*rd)());
+
+		latency_gen = new std::poisson_distribution<>(l);
+		tokensIn_gen = new std::poisson_distribution<>(in);
+		tokensOut_gen = new std::poisson_distribution<>(out);
+
+		latency=(*latency_gen)(*gen);
+	}
+	
+	//returns TRUE if latency is 0
+	bool ready()
+	{
+		if(latency==0)
+			return true;
+		else
+			return false;
+	}
+
+	//decreases latency
+	void decrease()
+	{
+		latency--;
+	}
+
+	//returns number of required input tokens
+	int requiredTokens()	
+	{
+		return tokensIn;
+	}
+
+	void trigger()
+	{}	
+
 };
 
 class Actor
@@ -84,7 +128,7 @@ class Actor
 	int peekTokens(int p)
 	{
 		if(p<4)
-			return ports[p].peekTokens(t);
+			return ports[p].peekTokens();
 		else
 		{
 			cout << "Error: request for non-existent port in actor " << name << "\n";
@@ -110,22 +154,22 @@ class Actor
 		{
 			if(actions[i])
 			{
-				if(actions[i].ready())
+				if(actions[i]->ready())
 				{
 					//Ready to run, latency is 0
-					if(peekTokens(i) >= actions[i].requiredTokens())
+					if(peekTokens(i) >= actions[i]->requiredTokens())
 					{
 						//Has enough tokens to trigger
 						//get from input port
-						subTokens(i,actions[i].requiredTokens());	
+						subTokens(i,actions[i]->requiredTokens());	
 						//trigger action
-						actions[i].trigger();
+						actions[i]->trigger();
 					}
 				}
 				else
 				{
 					//Not ready to run, decrease latency
-					actions[i].decrease();
+					actions[i]->decrease();
 				}
 			}
 		}
