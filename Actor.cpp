@@ -42,8 +42,9 @@ Action::Action(int l, int in, int out, Actor *a, int p)
 	target=a;
 	port=p;
 
-	//clear tokens on corresponding port
-	target->clearTokens(p);
+	//clear tokens on corresponding port, unless it's network output
+	if(target)
+		target->clearTokens(p);
 
 	rdl = new std::random_device;
 	rdI = new std::random_device;
@@ -55,51 +56,59 @@ Action::Action(int l, int in, int out, Actor *a, int p)
 	latency_gen = new std::poisson_distribution<>(l);
 	tokensIn_gen = new std::poisson_distribution<>(in);
 	tokensOut_gen = new std::poisson_distribution<>(out);
-	latency=(*latency_gen)(*genl);
+	//latency=(*latency_gen)(*genl);
+	//Begin with 0 latency, i.e., action idle and ready
+	latency=0;
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
 }
 	
-	//returns TRUE if latency is 0
-bool Action::ready()
+//returns TRUE if latency is 0
+bool Action::finished()
 {
 	if(latency==0)
 	{
-		cout << "Ready\n";
+		//cout << "Finished\n";
 		return true;
 	}
 	else
 	{
-		cout << "Not ready: latency " << latency << "\n";
+		//cout << "Not finished: latency " << latency << "\n";
 		return false;
 	}
 }
 //decreases latency
+//when it reaches 0 (action finished)
+//output tokens
 void Action::decrease()
 {
 	latency--;
+	if(latency==0)
+	{
+		//If target is NULL, then it's output port
+		if(target)
+		{
+			//Feed tokens to its corresponding input port
+			target->addTokens(port,tokensOut);
+			cout << "Added " << tokensOut << " tokens to next actor\n";
+		}
+		else
+		{
+			cout << "Output " << tokensOut << "\n"; 
+		}
+	}
 }
 
 //returns number of required input tokens
 int Action::requiredTokens()	
 {
-	cout << "Require " << tokensIn << " tokens\n";
+	//cout << "Require " << tokensIn << " tokens\n";
 	return tokensIn;
 }
 
 void Action::trigger()
 {
-	//If target is NULL, then it's output port
-	if(target)
-	{
-		//Feed tokens to its corresponding input port
-		target->addTokens(port,tokensOut);
-		cout << "Added " << tokensOut << " tokens to next actor\n";
-	}
-	else
-	{
-		cout << "Output " << tokensOut << "\n"; 
-	}
+	
 	latency=(*latency_gen)(*genl);
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
@@ -109,6 +118,7 @@ void Action::trigger()
 Actor::Actor(string n)
 {
 	name=n;
+	idle=0;
 	for(int i=0;i<4;i++)
 	{
 		actions[i]=NULL;
@@ -182,31 +192,46 @@ void Actor::addAction(Action *a)
 //If not runnable, decrease poisson latency
 void Actor::run()
 {
+	bool no_action=true;
+	//cout << "Running actor " << name << "\n";
 	for(int i=0;i<4;i++)
 	{
 		if(actions[i])
 		{
-			if(actions[i]->ready())
+
+			//If action is still running, decrease latency
+
+			//If action not running, see if enough tokens are available
+				//If yes, trigger
+
+			//Else, do nothing
+			if(!actions[i]->finished())
 			{
-				//Ready to run, latency is 0
-				if(peekTokens(i) >= actions[i]->requiredTokens())
-				{
-					//Has enough tokens to trigger
-					//get from input port
-					subTokens(i,actions[i]->requiredTokens());	
-					//trigger action
-					actions[i]->trigger();
-				}
-			}
-			else
-			{
-				//Not ready to run, decrease latency
+				//Not finished, decrease latency
 				actions[i]->decrease();
+				no_action=false;
+				continue;
+			}
+			//Action is not running
+			if(peekTokens(i) >= actions[i]->requiredTokens())
+			{
+				//Has enough tokens to trigger
+				//get from input port
+				subTokens(i,actions[i]->requiredTokens());	
+				//trigger action
+				actions[i]->trigger();
+				no_action=false;
 			}
 		}
 	}
+	if(no_action)
+		idle++;
 }
 
+int Actor::get_idle_time()
+{
+	return idle;
+}
 
 
 Network::Network()
@@ -241,6 +266,20 @@ void Network::connect(int i, int j, int k, int l)
 	act = new Action(1,1,1,act_array[k][l],act_array[k][l]->get_free_port());
 	act_array[i][j]->addAction(act);
 }
+
+//Creates a new connection to an output port
+void Network::output(int i, int j)
+{
+	Action *act;
+	if(act_array[i][j]==NULL)
+	{
+		cout << "Error: attempting to connect empty actor\n";
+		return;
+	}
+	act = new Action(1,1,1,NULL,0);
+	act_array[i][j]->addAction(act);
+}
+
 //runs the network for fixed iterations
 void Network::run()
 {
@@ -252,7 +291,7 @@ void Network::run()
 
 	cout << "Starting network run.....\n";
 
-	for(iterations=10;iterations>0;iterations--)
+	for(iterations=100;iterations>0;iterations--)
 	{
 		for(int i=0;i<10;i++)
 		{
@@ -267,6 +306,17 @@ void Network::run()
 	cout << "Finished network run\n";
 }
 
+void Network::print_statistics()
+{
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+		{
+			if(act_array[i][j])
+				cout << "Actor " << i << "," << j << " idle for " << act_array[i][j]->get_idle_time() << " cycles\n";
+		}
+	}
+}
 
 
 

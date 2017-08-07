@@ -50,13 +50,13 @@ class Action
 	public:
 	Action(int l, int in, int out, Actor *a, int p);
 	
-	//returns TRUE if latency is 0
-	bool ready();
+	//returns TRUE if latency is 0, i.e., action is finished
+	bool finished();
 	//decreases latency
 	void decrease();
 
-	//returns number of required input tokens
-	int requiredTokens()	;
+	//returns number of required input tokens for action to trigger
+	int requiredTokens();
 
 	void trigger();
 
@@ -72,6 +72,8 @@ class Actor
 	InPort ports[4];
 	bool port_taken[4];
 	Action* actions[4];
+	//record the number of cycles the actor was completely idle, i.e., no actions to fire
+	int idle; 
 
 	public:
 
@@ -96,6 +98,14 @@ class Actor
 	//If not enough tokens, wait
 	//If not runnable, decrease poisson latency
 	void run();
+
+
+
+	//Data collection functions
+
+	//returns number of idle cycles
+	int get_idle_time();
+
 };
 
 class Network
@@ -113,8 +123,13 @@ class Network
 	//i.e., creates a new action within actor i,j which outputs to actor k,l
 	//action latencies are default for now, will be updated
 	void connect(int i, int j, int k, int l);
+	//Creates a new connection to an output port
+	void output(int i, int j);
 	//runs the network for fixed iterations
 	void run();
+
+	//Data collection
+	void print_statistics();
 };	
 
 
