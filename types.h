@@ -25,6 +25,7 @@ class InPort
 	void addTokens(int t);
 	void subTokens(int t);
 	int peekTokens();
+	void clearTokens();
 };
 
 class Action
@@ -82,6 +83,9 @@ class Actor
 	//connection functions
 	//returns first free input port
 	int get_free_port();
+
+	//clears corresponding port queue
+	void clearTokens(int p);
 
 	//Adds a new action to slot "i";
 	void addAction(Action *a);

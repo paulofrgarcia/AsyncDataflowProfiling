@@ -11,10 +11,13 @@ using namespace std;
 class Action;
 class Actor;
 
-
+//We initialize each queue with a large value
+//so input ports will have enough tokens to begin with
+//when actions are connected to feed ports (i.e., they are not network inputs)
+//the queue is cleared
 InPort::InPort()
 {
-	queue = 0;
+	queue = 100000;
 }
 void InPort::addTokens(int t)
 {
@@ -29,11 +32,19 @@ int InPort::peekTokens()
 	return queue;
 }
 
+void InPort::clearTokens()
+{
+	queue=0;
+}
 	
 Action::Action(int l, int in, int out, Actor *a, int p)
 {
 	target=a;
 	port=p;
+
+	//clear tokens on corresponding port
+	target->clearTokens(p);
+
 	rdl = new std::random_device;
 	rdI = new std::random_device;
 	rdO = new std::random_device;
@@ -117,6 +128,11 @@ int Actor::get_free_port()
 		}
 	}
 	cout << "Error: attempted too many connections to actor " << name;
+}
+
+void Actor::clearTokens(int p)
+{
+	ports[p].clearTokens();
 }
 
 //Input ports management functions
@@ -228,6 +244,27 @@ void Network::connect(int i, int j, int k, int l)
 //runs the network for fixed iterations
 void Network::run()
 {
+	int iterations;
+	//As we start running, network input ports have 100000 tokens each
+	//all other ports are empty
+
+	//We want each actor to run once at every scheduling point
+
+	cout << "Starting network run.....\n";
+
+	for(iterations=10;iterations>0;iterations--)
+	{
+		for(int i=0;i<10;i++)
+		{
+			for(int j=0;j<10;j++)
+			{
+				if(act_array[i][j])
+					act_array[i][j]->run();
+			}
+		}
+	}
+
+	cout << "Finished network run\n";
 }
 
 

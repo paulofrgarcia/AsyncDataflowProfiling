@@ -25,6 +25,7 @@ class InPort
 	void addTokens(int t);
 	void subTokens(int t);
 	int peekTokens();
+	void clearTokens();
 };
 
 class Action
@@ -84,7 +85,7 @@ class Actor
 	int get_free_port();
 
 	//Adds a new action to slot "i";
-	void addAction(Action *a,int i);
+	void addAction(Action *a);
 
 	//This function is called at every scheduling cycle
 	//For each action, checks if it is runnable: i.e., if poisson latency is 0

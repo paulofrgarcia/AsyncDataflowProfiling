@@ -7,32 +7,25 @@ using namespace std;
 
 int main()
 {
-	//Creates dataflow network
-	Actor a("first");
-	Actor b("second");
+	Network my_network;
+
+	my_network.addActor("",0,0);
+	my_network.addActor("",0,1);
+	my_network.addActor("",0,2);
+
+	my_network.connect(0,0,0,1);
+	my_network.connect(0,0,0,2);
+	my_network.connect(0,1,0,2);
+
+	my_network.run();
 
 
-	Action *act = new Action(1,1,1,&b,0);
+	/*
+	Data collection:
 
-	a.addAction(act);
+	
 
-	a.addTokens(0,100);
-
-
-	a.run();
-	b.run();
-	a.run();
-	a.run();
-	a.run();
-	a.run();
-	a.run();
-	a.run();
-	a.run();
-
-
-
-	//Other stuff
-
+	*/
 
 
 	return 0;
