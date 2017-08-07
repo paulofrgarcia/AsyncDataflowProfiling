@@ -83,6 +83,7 @@ void Action::trigger()
 	{
 		//Feed tokens to its corresponding input port
 		target->addTokens(port,tokensOut);
+		cout << "Added " << tokensOut << " tokens to next actor\n";
 	}
 	else
 	{
@@ -94,76 +95,156 @@ void Action::trigger()
 }	
 
 
-	Actor::Actor(string n)
+Actor::Actor(string n)
+{
+	name=n;
+	for(int i=0;i<4;i++)
 	{
-		name=n;
-		for(int i=0;i<4;i++)
-			actions[i]=NULL;
+		actions[i]=NULL;
+		port_taken[i]=false;
 	}
-	//Input ports management functions
-	void Actor::addTokens(int p, int t)
+}
+
+//returns first free input port
+int Actor::get_free_port()
+{
+	for(int i=0;i<4;i++)
 	{
-		if(p<4)
-			ports[p].addTokens(t);
-		else
-			cout << "Error: request for non-existent port in actor " << name << "\n";
-	}
-	void Actor::subTokens(int p, int t)
-	{
-		if(p<4)
-			ports[p].subTokens(t);
-		else
-			cout << "Error: request for non-existent port in actor " << name << "\n";
-	}
-	int Actor::peekTokens(int p)
-	{
-		if(p<4)
-			return ports[p].peekTokens();
-		else
+		if(port_taken[i]==false)
 		{
-			cout << "Error: request for non-existent port in actor " << name << "\n";
-			return 0;
+			port_taken[i]=true;
+			return i;
 		}
 	}
+	cout << "Error: attempted too many connections to actor " << name;
+}
 
-	//Adds a new action to slot "i"
-	void Actor::addAction(Action *a,int i)
+//Input ports management functions
+void Actor::addTokens(int p, int t)
+{
+	if(p<4)
+		ports[p].addTokens(t);
+	else
+		cout << "Error: request for non-existent port in actor " << name << "\n";
+}
+void Actor::subTokens(int p, int t)
+{
+	if(p<4)
+		ports[p].subTokens(t);
+	else
+		cout << "Error: request for non-existent port in actor " << name << "\n";
+}
+int Actor::peekTokens(int p)
+{
+	if(p<4)
+		return ports[p].peekTokens();
+	else
 	{
-		actions[i]=a;
+		cout << "Error: request for non-existent port in actor " << name << "\n";
+		return 0;
 	}
+}
+//Adds a new action 
+void Actor::addAction(Action *a)
+{
+	for(int i=0;i<4;i++)
+	{
+		if(actions[i]==NULL)
+		{
+			actions[i]=a;
+			return;
+		}
+	}
+	cout << "Error: attempted to add too many actions to actor " << name;
+}
 	
 
-	//This function is called at every scheduling cycle
-	//For each action, checks if it is runnable: i.e., if poisson latency is 0
-	//If yes, check if enough tokens to run it, then trigger: this generates new poisson latency
-	//If not enough tokens, wait
-	//If not runnable, decrease poisson latency
-	void Actor::run()
+//This function is called at every scheduling cycle
+//For each action, checks if it is runnable: i.e., if poisson latency is 0
+//If yes, check if enough tokens to run it, then trigger: this generates new poisson latency
+//If not enough tokens, wait
+//If not runnable, decrease poisson latency
+void Actor::run()
+{
+	for(int i=0;i<4;i++)
 	{
-		for(int i=0;i<4;i++)
+		if(actions[i])
 		{
-			if(actions[i])
+			if(actions[i]->ready())
 			{
-				if(actions[i]->ready())
+				//Ready to run, latency is 0
+				if(peekTokens(i) >= actions[i]->requiredTokens())
 				{
-					//Ready to run, latency is 0
-					if(peekTokens(i) >= actions[i]->requiredTokens())
-					{
-						//Has enough tokens to trigger
-						//get from input port
-						subTokens(i,actions[i]->requiredTokens());	
-						//trigger action
-						actions[i]->trigger();
-					}
+					//Has enough tokens to trigger
+					//get from input port
+					subTokens(i,actions[i]->requiredTokens());	
+					//trigger action
+					actions[i]->trigger();
 				}
-				else
-				{
-					//Not ready to run, decrease latency
-					actions[i]->decrease();
-				}
+			}
+			else
+			{
+				//Not ready to run, decrease latency
+				actions[i]->decrease();
 			}
 		}
 	}
+}
+
+
+
+Network::Network()
+{
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+			act_array[i][j]=NULL;
+	}
+}
+//Creates a new actor at position i,j
+void Network::addActor(string n, int i, int j)
+{
+	if(act_array[i][j])
+	{
+		cout << "Error: actor re-definition\n";
+		return;
+	}
+	act_array[i][j] = new Actor(n);
+}
+//Creates a new connection between two actors at positions i,j and k,l
+//i.e., creates a new action within actor i,j which outputs to actor k,l
+//action latencies are default for now, will be updated
+void Network::connect(int i, int j, int k, int l)
+{
+	Action *act;
+	if((act_array[i][j]==NULL) || (act_array[k][l]==NULL))
+	{
+		cout << "Error: attempting to connect empty actors\n";
+		return;
+	}
+	act = new Action(1,1,1,act_array[k][l],act_array[k][l]->get_free_port());
+	act_array[i][j]->addAction(act);
+}
+//runs the network for fixed iterations
+void Network::run()
+{
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

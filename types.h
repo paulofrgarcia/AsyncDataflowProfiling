@@ -69,6 +69,7 @@ class Actor
 	//Number of input ports is limited to 4, as that suffices for our experiments
 	//Can be updated to allow for arbitrary limit in the future
 	InPort ports[4];
+	bool port_taken[4];
 	Action* actions[4];
 
 	public:
@@ -78,10 +79,12 @@ class Actor
 	void addTokens(int p, int t);
 	void subTokens(int p, int t);
 	int peekTokens(int p);
+	//connection functions
+	//returns first free input port
+	int get_free_port();
 
 	//Adds a new action to slot "i";
-	//Adds a new action to slot "i"
-	void addAction(Action *a,int i);
+	void addAction(Action *a);
 
 	//This function is called at every scheduling cycle
 	//For each action, checks if it is runnable: i.e., if poisson latency is 0
@@ -90,6 +93,25 @@ class Actor
 	//If not runnable, decrease poisson latency
 	void run();
 };
+
+class Network
+{
+	private:
+	//This 10x10 structure is lazy, but really simplifies printing results
+	//Can be updated to allow for arbitrarily large networks in the future
+	Actor *act_array[10][10];
+
+	public:
+	Network();
+	//Creates a new actor at position i,j
+	void addActor(string n, int i, int j);
+	//Creates a new connection between two actors at positions i,j and k,l
+	//i.e., creates a new action within actor i,j which outputs to actor k,l
+	//action latencies are default for now, will be updated
+	void connect(int i, int j, int k, int l);
+	//runs the network for fixed iterations
+	void run();
+};	
 
 
 
