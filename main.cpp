@@ -1,26 +1,22 @@
 #include<iostream>
 #include<string>
+#include"types.h"
 
 using namespace std;
-
-class Action;
-class Actor;
-
-//Creates a new actor named "name", with "p" input ports and without any output ports 
-//void create_new_actor(string name, int p)
-//{}
-
-//Creates a new action within actor "a", 
-//void create_action(Actor *a, );
 
 
 int main()
 {
-
-
 	//Creates dataflow network
-	Actor *a;
+	Actor a("first");
 
+	Action *act = new Action(1,1,1,NULL,0);
+
+	a.addAction(act,0);
+	a.run();
+	a.run();
+	a.run();
+	a.run();
 
 
 

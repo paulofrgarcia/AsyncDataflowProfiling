@@ -3,7 +3,7 @@
 #include<map>
 #include<random>
 #include<iomanip>
-
+#include"types.h"
 
 using namespace std;
 
@@ -12,145 +12,110 @@ class Action;
 class Actor;
 
 
-class InPort
+InPort::InPort()
 {
-	private:
-	int queue;
-
-	public:
-	InPort()
-	{
-		queue = 0;
-	}
-	void addTokens(int t)
-	{
-		queue += t;
-	}
-	void subTokens(int t)
-	{
-		queue -= t;
-	}
-	int peekTokens()
-	{
-		return queue;
-	}
-};
-
-class Action
+	queue = 0;
+}
+void InPort::addTokens(int t)
 {
-	private:
-	int latency;
-	int tokensIn;
-	int tokensOut;
-	Actor *target;
+	queue += t;
+}
+void InPort::subTokens(int t)
+{
+	queue -= t;
+}
+int InPort::peekTokens()
+{
+	return queue;
+}
 
-	std::random_device *rd;
-	std::mt19937 *genl;
-	std::mt19937 *genI;
-	std::mt19937 *genO;
-	std::poisson_distribution<> *latency_gen;
-	std::poisson_distribution<> *tokensIn_gen;
-	std::poisson_distribution<> *tokensOut_gen;
+	
+Action::Action(int l, int in, int out, Actor *a, int p)
+{
+	target=a;
+	port=p;
+	rdl = new std::random_device;
+	rdI = new std::random_device;
+	rdO = new std::random_device;
+	genl = new std::mt19937((*rdl)());
+	genI = new std::mt19937((*rdI)());
+	genO = new std::mt19937((*rdO)());
 
-	public:
-	Action(int l, int in, int out, Actor *a)
-	{
-		target=a;
-
-		rd = new std::random_device;
-		genl = new std::mt19937((*rd)());
-		genI = new std::mt19937((*rd)());
-		genO = new std::mt19937((*rd)());
-
-		latency_gen = new std::poisson_distribution<>(l);
-		tokensIn_gen = new std::poisson_distribution<>(in);
-		tokensOut_gen = new std::poisson_distribution<>(out);
-
-		latency=(*latency_gen)(*genl);
-		tokensIn=(*tokensIn_gen)(*genI);
-		tokensOut=(*tokensOut_gen)(*genO);
-	}
+	latency_gen = new std::poisson_distribution<>(l);
+	tokensIn_gen = new std::poisson_distribution<>(in);
+	tokensOut_gen = new std::poisson_distribution<>(out);
+	latency=(*latency_gen)(*genl);
+	tokensIn=(*tokensIn_gen)(*genI);
+	tokensOut=(*tokensOut_gen)(*genO);
+}
 	
 	//returns TRUE if latency is 0
-	bool ready()
-	{
-		if(latency==0)
-		{
-			cout << "Ready\n";
-			return true;
-		}
-		else
-		{
-			cout << "Not ready: latency " << latency << "\n";
-			return false;
-		}
-	}
-
-	//decreases latency
-	void decrease()
-	{
-		latency--;
-	}
-
-	//returns number of required input tokens
-	int requiredTokens()	
-	{
-		cout << "Require " << tokensIn << " tokens\n";
-		return tokensIn;
-	}
-
-	void trigger()
-	{
-		//If target is NULL, then it's output port
-		if(target)
-		{
-		}
-		else
-		{
-			cout << "Output " << tokensOut << "\n"; 
-		}
-		latency=(*latency_gen)(*genl);
-		tokensIn=(*tokensIn_gen)(*genI);
-		tokensOut=(*tokensOut_gen)(*genO);
-	}	
-
-};
-
-class Actor
+bool Action::ready()
 {
-	private:
-	string name;
+	if(latency==0)
+	{
+		cout << "Ready\n";
+		return true;
+	}
+	else
+	{
+		cout << "Not ready: latency " << latency << "\n";
+		return false;
+	}
+}
+//decreases latency
+void Action::decrease()
+{
+	latency--;
+}
+
+//returns number of required input tokens
+int Action::requiredTokens()	
+{
+	cout << "Require " << tokensIn << " tokens\n";
+	return tokensIn;
+}
+
+void Action::trigger()
+{
+	//If target is NULL, then it's output port
+	if(target)
+	{
+		//Feed tokens to its corresponding input port
+		target->addTokens(port,tokensOut);
+	}
+	else
+	{
+		cout << "Output " << tokensOut << "\n"; 
+	}
+	latency=(*latency_gen)(*genl);
+	tokensIn=(*tokensIn_gen)(*genI);
+	tokensOut=(*tokensOut_gen)(*genO);
+}	
 
 
-	//Number of input ports is limited to 4, as that suffices for our experiments
-	//Can be updated to allow for arbitrary limit in the future
-	InPort ports[4];
-	Action* actions[4];
-
-	public:
-
-	Actor(string n)
+	Actor::Actor(string n)
 	{
 		name=n;
 		for(int i=0;i<4;i++)
 			actions[i]=NULL;
 	}
 	//Input ports management functions
-	void addTokens(int p, int t)
+	void Actor::addTokens(int p, int t)
 	{
 		if(p<4)
 			ports[p].addTokens(t);
 		else
 			cout << "Error: request for non-existent port in actor " << name << "\n";
 	}
-	void subTokens(int p, int t)
+	void Actor::subTokens(int p, int t)
 	{
 		if(p<4)
 			ports[p].subTokens(t);
 		else
 			cout << "Error: request for non-existent port in actor " << name << "\n";
 	}
-	int peekTokens(int p)
+	int Actor::peekTokens(int p)
 	{
 		if(p<4)
 			return ports[p].peekTokens();
@@ -162,7 +127,7 @@ class Actor
 	}
 
 	//Adds a new action to slot "i"
-	void addAction(Action *a,int i)
+	void Actor::addAction(Action *a,int i)
 	{
 		actions[i]=a;
 	}
@@ -173,7 +138,7 @@ class Actor
 	//If yes, check if enough tokens to run it, then trigger: this generates new poisson latency
 	//If not enough tokens, wait
 	//If not runnable, decrease poisson latency
-	void run()
+	void Actor::run()
 	{
 		for(int i=0;i<4;i++)
 		{
@@ -199,32 +164,11 @@ class Actor
 			}
 		}
 	}
-};
 
 
 
 
-int main()
-{
-	//Creates dataflow network
-	Actor a("first");
 
-	Action *act = new Action(1,1,1,NULL);
-
-	a.addAction(act,0);
-	a.run();
-	a.run();
-	a.run();
-	a.run();
-
-
-
-	//Other stuff
-
-
-
-	return 0;
-}
 
 
 
