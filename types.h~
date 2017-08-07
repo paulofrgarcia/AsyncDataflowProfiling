@@ -74,6 +74,8 @@ class Actor
 	Action* actions[4];
 	//record the number of cycles the actor was completely idle, i.e., no actions to fire
 	int idle; 
+	//set if actor was idle in last run
+	bool was_idle;
 
 	public:
 
@@ -85,12 +87,16 @@ class Actor
 	//connection functions
 	//returns first free input port
 	int get_free_port();
+	int peek_free_port();
 
 	//clears corresponding port queue
 	void clearTokens(int p);
 
 	//Adds a new action to slot "i";
 	void addAction(Action *a);
+
+	//Check required tokens for action
+	int get_required(int p);
 
 	//This function is called at every scheduling cycle
 	//For each action, checks if it is runnable: i.e., if poisson latency is 0
@@ -105,6 +111,8 @@ class Actor
 
 	//returns number of idle cycles
 	int get_idle_time();
+	//returns true if actor was idle in last run
+	bool last_state();
 
 };
 
@@ -127,9 +135,13 @@ class Network
 	void output(int i, int j);
 	//runs the network for fixed iterations
 	void run();
+	
+	//Debug/visualization
+	void print_state();
+
 
 	//Data collection
-	void print_statistic();
+	void print_statistics();
 };	
 
 

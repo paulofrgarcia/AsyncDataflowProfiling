@@ -119,6 +119,7 @@ Actor::Actor(string n)
 {
 	name=n;
 	idle=0;
+	was_idle=false;
 	for(int i=0;i<4;i++)
 	{
 		actions[i]=NULL;
@@ -138,6 +139,16 @@ int Actor::get_free_port()
 		}
 	}
 	cout << "Error: attempted too many connections to actor " << name;
+}
+//peeks first free input port
+int Actor::get_action_number()
+{
+	for(int i=0;i<4;i++)
+	{
+		if(actions[i]==NULL)
+			return i;
+	}
+	return 4;
 }
 
 void Actor::clearTokens(int p)
@@ -209,7 +220,7 @@ void Actor::run()
 			{
 				//Not finished, decrease latency
 				actions[i]->decrease();
-				no_actions=false;
+				no_action=false;
 				continue;
 			}
 			//Action is not running
@@ -225,7 +236,12 @@ void Actor::run()
 		}
 	}
 	if(no_action)
+	{
 		idle++;
+		was_idle=true;
+	}
+	else
+		was_idle=false;
 }
 
 int Actor::get_idle_time()
@@ -233,6 +249,18 @@ int Actor::get_idle_time()
 	return idle;
 }
 
+bool Actor::last_state()
+{
+	return was_idle;
+}
+
+int Actor::get_required(int p)
+{
+	if(actions[p])
+		return actions[p]->requiredTokens();
+	else
+		return 0;
+}
 
 Network::Network()
 {
@@ -291,8 +319,9 @@ void Network::run()
 
 	cout << "Starting network run.....\n";
 
-	for(iterations=100;iterations>0;iterations--)
+	for(iterations=10;iterations>0;iterations--)
 	{
+		print_state();
 		for(int i=0;i<10;i++)
 		{
 			for(int j=0;j<10;j++)
@@ -318,7 +347,32 @@ void Network::print_statistics()
 	}
 }
 
-
+void Network::print_state()
+{
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+		{
+			if(act_array[i][j])
+			{
+				//number of available input tokens
+				//number of required input tokens
+				//running or idle
+				for(int k=0;k<4;k++)
+				{
+					//cout << "dbg " << act_array[i][j]->get_action_number();
+					if(k<(act_array[i][j]->get_action_number()))
+						cout << "in (" << act_array[i][j]->peekTokens(k) << ") req (" << act_array[i][j]->get_required(k) << ") ";
+				}
+				if(act_array[i][j]->last_state())
+					cout <<  "IDLE\t";
+				else
+					cout << "RUNNING\t";
+			}
+		}
+		cout << "\n";
+	}	
+}
 
 
 
