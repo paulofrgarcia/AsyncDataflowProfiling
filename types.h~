@@ -9,10 +9,10 @@
 
 using namespace std;
 
-class Port;
+class InPort;
 class Action;
 class Actor;
-
+class Network;
 
 
 class InPort
@@ -87,7 +87,7 @@ class Actor
 	//connection functions
 	//returns first free input port
 	int get_free_port();
-	int peek_free_port();
+	int get_action_number();
 
 	//clears corresponding port queue
 	void clearTokens(int p);

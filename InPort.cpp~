@@ -1,0 +1,35 @@
+#include<iostream>
+#include<string>
+#include<map>
+#include<random>
+#include<iomanip>
+#include"types.h"
+
+using namespace std;
+
+//We initialize each queue with a large value
+//so input ports will have enough tokens to begin with
+//when actions are connected to feed ports (i.e., they are not network inputs)
+//the queue is cleared
+InPort::InPort()
+{
+	queue = 100000;
+}
+void InPort::addTokens(int t)
+{
+	queue += t;
+}
+void InPort::subTokens(int t)
+{
+	queue -= t;
+}
+int InPort::peekTokens()
+{
+	return queue;
+}
+
+void InPort::clearTokens()
+{
+	queue=0;
+}
+

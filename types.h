@@ -9,10 +9,10 @@
 
 using namespace std;
 
-class Port;
+class InPort;
 class Action;
 class Actor;
-
+class Network;
 
 
 class InPort
@@ -133,6 +133,8 @@ class Network
 	void connect(int i, int j, int k, int l);
 	//Creates a new connection to an output port
 	void output(int i, int j);
+	//feeds tokens to a port (used for network input)
+	void feed_input(int i, int j, int p, int t);
 	//runs the network for fixed iterations
 	void run();
 	

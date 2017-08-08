@@ -12,12 +12,23 @@ int main()
 	my_network.addActor("a",0,0);
 	my_network.addActor("b",0,1);
 	my_network.addActor("c",0,2);
+	my_network.addActor("d",0,3);
 
 	my_network.connect(0,0,0,1);
 	my_network.connect(0,0,0,2);
 	my_network.connect(0,1,0,2);
+	my_network.connect(0,2,0,3);
+	my_network.output(0,3);
 
 	my_network.output(0,2);
+
+
+	//feed input
+	my_network.feed_input(0,0,0,5000);
+	my_network.feed_input(0,0,1,5000);
+	my_network.feed_input(0,2,1,5000);
+
+
 
 	my_network.run();
 
