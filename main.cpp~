@@ -24,9 +24,9 @@ int main()
 
 
 	//feed input
-	my_network.feed_input(0,0,0,50);
-	my_network.feed_input(0,0,1,50);
-	my_network.feed_input(0,2,1,50);
+	my_network.feed_input(0,0,0,5000);
+	my_network.feed_input(0,0,1,5000);
+	my_network.feed_input(0,2,1,5000);
 
 
 

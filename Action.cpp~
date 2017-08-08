@@ -89,7 +89,7 @@ void Action::decrease()
 		}
 		else
 		{
-			cout << "Output " << tokensOut << "\n"; 
+			//cout << "Output " << tokensOut << "\n"; 
 			(*out_cnt)+=tokensOut;
 		}
 	}

@@ -112,6 +112,12 @@ class Actor
 	void run();
 
 
+	//Gating functions
+	void gate_actor();
+	void ungate_actor();
+
+
+
 
 	//Data collection functions
 

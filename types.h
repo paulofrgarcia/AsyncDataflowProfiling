@@ -155,8 +155,8 @@ class Network
 	void output(int i, int j);
 	//feeds tokens to a port (used for network input)
 	void feed_input(int i, int j, int p, int t);
-	//runs the network for fixed iterations
-	void run();
+	//runs the network for a certain number of iterations
+	void run(int i);
 	
 	//Debug/visualization
 	void print_state();

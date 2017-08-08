@@ -69,8 +69,8 @@ void Network::feed_input(int i, int j, int p, int t)
 
 
 
-//runs the network for fixed iterations
-void Network::run()
+//runs the network for a certain number of iterations
+void Network::run(int i)
 {
 	int iterations;
 	//As we start running, network input ports have 100000 tokens each
@@ -80,7 +80,7 @@ void Network::run()
 
 	cout << "Starting network run.....\n";
 
-	for(iterations=1000;iterations>0;iterations--)
+	for(iterations=i;iterations>0;iterations--)
 	{
 		//print_state();
 		for(int i=0;i<10;i++)

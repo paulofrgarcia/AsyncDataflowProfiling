@@ -80,7 +80,7 @@ void Network::run()
 
 	cout << "Starting network run.....\n";
 
-	for(iterations=100;iterations>0;iterations--)
+	for(iterations=1000;iterations>0;iterations--)
 	{
 		//print_state();
 		for(int i=0;i<10;i++)

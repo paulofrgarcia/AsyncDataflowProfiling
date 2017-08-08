@@ -30,7 +30,7 @@ int main()
 
 
 
-	my_network.run();
+	my_network.run(1000);
 
 	my_network.print_statistics();
 	/*

@@ -85,7 +85,7 @@ void Action::decrease()
 		{
 			//Feed tokens to its corresponding input port
 			target->addTokens(port,tokensOut);
-			cout << "Added " << tokensOut << " tokens to next actor\n";
+			//cout << "Added " << tokensOut << " tokens to next actor\n";
 		}
 		else
 		{
