@@ -36,6 +36,8 @@ class Action
 	int tokensOut;
 	Actor *target;
 	int port;
+	//pointer to output counter
+	int *out_cnt;
 
 	std::random_device *rdl;
 	std::random_device *rdI;
@@ -49,6 +51,7 @@ class Action
 
 	public:
 	Action(int l, int in, int out, Actor *a, int p);
+	Action(int l, int in, int out, int *o);
 	
 	//returns TRUE if latency is 0, i.e., action is finished
 	bool finished();
@@ -76,6 +79,9 @@ class Actor
 	int idle; 
 	//set if actor was idle in last run
 	bool was_idle;
+
+	//If set, actor is not scheduled to run
+	bool gated;
 
 	public:
 
@@ -106,6 +112,12 @@ class Actor
 	void run();
 
 
+	//Gating functions
+	void gate_actor();
+	void ungate_actor();
+
+
+
 
 	//Data collection functions
 
@@ -113,6 +125,8 @@ class Actor
 	int get_idle_time();
 	//returns true if actor was idle in last run
 	bool last_state();
+	//Check if gated
+	bool is_gated();
 
 };
 
@@ -124,6 +138,12 @@ class Network
 	Actor *act_array[10][10];
 
 	public:
+
+	int output_counter;
+
+
+
+
 	Network();
 	//Creates a new actor at position i,j
 	void addActor(string n, int i, int j);

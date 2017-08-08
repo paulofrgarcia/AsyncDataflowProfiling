@@ -16,6 +16,7 @@ Network::Network()
 		for(int j=0;j<10;j++)
 			act_array[i][j]=NULL;
 	}
+	output_counter = 0;
 }
 //Creates a new actor at position i,j
 void Network::addActor(string n, int i, int j)
@@ -51,7 +52,7 @@ void Network::output(int i, int j)
 		cout << "Error: attempting to connect empty actor\n";
 		return;
 	}
-	act = new Action(1,1,1,NULL,0);
+	act = new Action(1,1,1,&output_counter);
 	act_array[i][j]->addAction(act);
 }
 
@@ -79,7 +80,7 @@ void Network::run()
 
 	cout << "Starting network run.....\n";
 
-	for(iterations=10000;iterations>0;iterations--)
+	for(iterations=1000;iterations>0;iterations--)
 	{
 		//print_state();
 		for(int i=0;i<10;i++)
@@ -87,7 +88,10 @@ void Network::run()
 			for(int j=0;j<10;j++)
 			{
 				if(act_array[i][j])
+				{
+					if(!(act_array[i][j]->is_gated()))
 					act_array[i][j]->run();
+				}
 			}
 		}
 	}
@@ -105,6 +109,7 @@ void Network::print_statistics()
 				cout << "Actor " << i << "," << j << " idle for " << act_array[i][j]->get_idle_time() << " cycles\n";
 		}
 	}
+	cout << "Total of " << output_counter << " tokens output\n";
 }
 
 void Network::print_state()

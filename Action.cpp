@@ -33,6 +33,30 @@ Action::Action(int l, int in, int out, Actor *a, int p)
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
 }
+
+Action::Action(int l, int in, int out, int *o)
+{
+	target=NULL;
+	port=0;
+
+	rdl = new std::random_device;
+	rdI = new std::random_device;
+	rdO = new std::random_device;
+	genl = new std::mt19937((*rdl)());
+	genI = new std::mt19937((*rdI)());
+	genO = new std::mt19937((*rdO)());
+
+	latency_gen = new std::poisson_distribution<>(l);
+	tokensIn_gen = new std::poisson_distribution<>(in);
+	tokensOut_gen = new std::poisson_distribution<>(out);
+	//latency=(*latency_gen)(*genl);
+	//Begin with 0 latency, i.e., action idle and ready
+	latency=0;
+	tokensIn=(*tokensIn_gen)(*genI);
+	tokensOut=(*tokensOut_gen)(*genO);
+
+	out_cnt = o;
+}
 	
 //returns TRUE if latency is 0
 bool Action::finished()
@@ -65,7 +89,8 @@ void Action::decrease()
 		}
 		else
 		{
-			cout << "Output " << tokensOut << "\n"; 
+			//cout << "Output " << tokensOut << "\n"; 
+			(*out_cnt)+=tokensOut;
 		}
 	}
 }

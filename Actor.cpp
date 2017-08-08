@@ -18,6 +18,7 @@ Actor::Actor(string n)
 		actions[i]=NULL;
 		port_taken[i]=false;
 	}
+	gated = false;
 }
 
 //returns first free input port
@@ -155,8 +156,19 @@ int Actor::get_required(int p)
 		return 0;
 }
 
+bool Actor::is_gated()
+{
+	return gated;
+}
 
-
+void Actor::gate_actor()
+{
+	gated=true;
+}
+void Actor::ungate_actor()
+{
+	gated=false;
+}
 
 
 
