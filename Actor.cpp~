@@ -28,13 +28,29 @@ Actor::Actor(string n)
 }
 
 
-//Resets the actor to initial state completely
+//Resets the actor to initial state 
 //Also updates "iter_number"
 void Actor::soft_reset()
 {
 	was_idle=false;
 	gated = false;
 	iter_number++;
+	for(int i=0;i<4;i++)
+	{
+		ports[i].clearTokens();
+	}
+}
+
+//Resets the actor to initial state completely
+void Actor::hard_reset()
+{
+	was_idle=false;
+	gated = false;
+	for(int i=0;i<100;i++)
+	{
+		idle[iter_number]=0;
+	}
+	iter_number=0;
 }
 
 

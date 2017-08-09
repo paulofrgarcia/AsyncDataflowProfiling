@@ -190,7 +190,8 @@ class Network
 	void print_statistics();
 };	
 
-
+//Helper functions defined in "helper.cpp"
+int calculateMean(int data[]);
 
 
 

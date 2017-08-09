@@ -141,6 +141,9 @@ void Network::run(int i)
 	cout << "Finished network run\n";
 }
 
+
+//This is the interesting data collection bit
+
 void Network::print_statistics()
 {
 	for(int i=0;i<10;i++)
@@ -148,10 +151,10 @@ void Network::print_statistics()
 		for(int j=0;j<10;j++)
 		{
 			if(act_array[i][j])
-				cout << "Actor " << i << "," << j << " idle for " << act_array[i][j]->get_idle_time() << " cycles\n";
+				cout << "Actor " << i << "," << j << " idle for " << act_array[i][j]->get_idle_time() << " cycles average\n";
 		}
 	}
-	cout << "Total of " << output_counter[iter_number] << " tokens output\n";
+	cout << "Total of " << calculateMean(output_counter) << " tokens output average\n";
 }
 
 

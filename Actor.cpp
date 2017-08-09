@@ -35,6 +35,10 @@ void Actor::soft_reset()
 	was_idle=false;
 	gated = false;
 	iter_number++;
+	for(int i=0;i<4;i++)
+	{
+		ports[i].clearTokens();
+	}
 }
 
 //Resets the actor to initial state completely
@@ -169,7 +173,7 @@ void Actor::run()
 
 int Actor::get_idle_time()
 {
-	return idle[iter_number];
+	return calculateMean(idle);
 }
 
 bool Actor::last_state()

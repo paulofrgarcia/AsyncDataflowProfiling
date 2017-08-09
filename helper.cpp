@@ -1,20 +1,8 @@
-double calculateSD(int data[])
-{
-	int sum = 0, mean;
-	double standardDeviation = 0.0;
+#include<cmath>
 
-	for(int i = 0; i < 100; ++i)
-	{
-		sum += data[i];
-	}
+using namespace std;
 
-	mean = sum/100;
 
-	for(i = 0; i < 100; ++i)
-		standardDeviation += pow((double)(data[i] - mean), 2);
-
-	return sqrt(standardDeviation / 100);
-}
 
 int calculateMean(int data[])
 {

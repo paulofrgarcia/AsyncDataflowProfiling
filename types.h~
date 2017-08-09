@@ -93,7 +93,7 @@ class Actor
 	Actor(string n);
 
 
-	
+	void soft_reset();
 	//Resets the actor to initial state completely
 	void hard_reset();
 
@@ -190,7 +190,9 @@ class Network
 	void print_statistics();
 };	
 
-
+//Helper functions defined in "helper.cpp"
+float calculateSD(int data[]);
+int calculateMean(int data[]);
 
 
 
