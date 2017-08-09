@@ -75,8 +75,13 @@ class Actor
 	InPort ports[4];
 	bool port_taken[4];
 	Action* actions[4];
+
 	//record the number of cycles the actor was completely idle, i.e., no actions to fire
-	int idle; 
+	//We'll run the network 100 times to get mean and standard variation for each result
+	//hence, we'll use 100 token counters for gathering results
+	int idle[100]; 
+	int iter_number;
+
 	//set if actor was idle in last run
 	bool was_idle;
 
@@ -86,6 +91,15 @@ class Actor
 	public:
 
 	Actor(string n);
+
+
+	
+	//Resets the actor to initial state completely
+	void hard_reset();
+
+
+
+
 	//Input ports management functions
 	void addTokens(int p, int t);
 	void subTokens(int p, int t);
@@ -139,12 +153,22 @@ class Network
 
 	public:
 
-	int output_counter;
-
+	//We'll run the network 100 times to get mean and standard variation for each result
+	//hence, we'll use 100 token counters for gathering results
+	int output_counter[100];
+	//this one counts which iteration we're currently running, to determine which ounter to use
+	int iter_number;
 
 
 
 	Network();
+
+	//Resets the network to initial state, except for the metrics counters
+	//Also updates "iter_number" so we'll start using a new counter
+	void soft_reset();
+	//Resets the network to initial state completely
+	void hard_reset();
+
 	//Creates a new actor at position i,j
 	void addActor(string n, int i, int j);
 	//Creates a new connection between two actors at positions i,j and k,l
@@ -155,8 +179,8 @@ class Network
 	void output(int i, int j);
 	//feeds tokens to a port (used for network input)
 	void feed_input(int i, int j, int p, int t);
-	//runs the network for fixed iterations
-	void run();
+	//runs the network for a certain number of iterations
+	void run(int i);
 	
 	//Debug/visualization
 	void print_state();

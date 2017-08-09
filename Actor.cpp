@@ -11,7 +11,13 @@ using namespace std;
 Actor::Actor(string n)
 {
 	name=n;
-	idle=0;
+
+	for(int i=0;i<100;i++)
+	{
+		idle[iter_number]=0;
+	}
+	iter_number=0;
+
 	was_idle=false;
 	for(int i=0;i<4;i++)
 	{
@@ -20,6 +26,29 @@ Actor::Actor(string n)
 	}
 	gated = false;
 }
+
+
+//Resets the actor to initial state 
+//Also updates "iter_number"
+void Actor::soft_reset()
+{
+	was_idle=false;
+	gated = false;
+	iter_number++;
+}
+
+//Resets the actor to initial state completely
+void Actor::hard_reset()
+{
+	was_idle=false;
+	gated = false;
+	for(int i=0;i<100;i++)
+	{
+		idle[iter_number]=0;
+	}
+	iter_number=0;
+}
+
 
 //returns first free input port
 int Actor::get_free_port()
@@ -131,7 +160,7 @@ void Actor::run()
 	}
 	if(no_action)
 	{
-		idle++;
+		idle[iter_number]++;
 		was_idle=true;
 	}
 	else
@@ -140,7 +169,7 @@ void Actor::run()
 
 int Actor::get_idle_time()
 {
-	return idle;
+	return idle[iter_number];
 }
 
 bool Actor::last_state()

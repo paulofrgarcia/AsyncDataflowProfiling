@@ -16,8 +16,45 @@ Network::Network()
 		for(int j=0;j<10;j++)
 			act_array[i][j]=NULL;
 	}
-	output_counter = 0;
+	for(int i=0;i<100;i++)
+	{
+		output_counter[i] = 0;
+	}
+	iter_number=0;
 }
+
+//Resets the network to initial state, except for the metrics counters
+//Also updates "iter_number" so we'll start using a new counter
+void Network::soft_reset()
+{
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+		{
+			if(act_array[i][j])
+				act_array[i][j]->soft_reset();
+		}
+	}
+	iter_number++;
+}
+//Resets the network to initial state completely
+void Network::hard_reset()
+{
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+		{
+			if(act_array[i][j])
+				act_array[i][j]->hard_reset();
+		}
+	}
+	for(int i=0;i<100;i++)
+	{
+		output_counter[i] = 0;
+	}
+	iter_number=0;
+}
+
 //Creates a new actor at position i,j
 void Network::addActor(string n, int i, int j)
 {
@@ -52,7 +89,7 @@ void Network::output(int i, int j)
 		cout << "Error: attempting to connect empty actor\n";
 		return;
 	}
-	act = new Action(1,1,1,&output_counter);
+	act = new Action(1,1,1,&(output_counter[iter_number]));
 	act_array[i][j]->addAction(act);
 }
 
@@ -73,9 +110,7 @@ void Network::feed_input(int i, int j, int p, int t)
 void Network::run(int i)
 {
 	int iterations;
-	//As we start running, network input ports have 100000 tokens each
-	//all other ports are empty
-
+	
 	//We want each actor to run once at every scheduling point
 
 	cout << "Starting network run.....\n";
@@ -90,7 +125,14 @@ void Network::run(int i)
 				if(act_array[i][j])
 				{
 					if(!(act_array[i][j]->is_gated()))
-					act_array[i][j]->run();
+					{
+						//check if should gate
+						act_array[i][j]->run();
+					}	
+					else
+					{
+						//check if should ungate
+					}
 				}
 			}
 		}
@@ -109,9 +151,12 @@ void Network::print_statistics()
 				cout << "Actor " << i << "," << j << " idle for " << act_array[i][j]->get_idle_time() << " cycles\n";
 		}
 	}
-	cout << "Total of " << output_counter << " tokens output\n";
+	cout << "Total of " << output_counter[iter_number] << " tokens output\n";
 }
 
+
+
+/////////////////DEBUG ONLY
 void Network::print_state()
 {
 	for(int i=0;i<10;i++)
@@ -138,6 +183,7 @@ void Network::print_state()
 		cout << "\n";
 	}	
 }
+
 
 
 
