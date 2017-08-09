@@ -113,7 +113,7 @@ void Network::run(int i)
 	
 	//We want each actor to run once at every scheduling point
 
-	cout << "Starting network run.....\n";
+	//cout << "Starting network run.....\n";
 
 	for(iterations=i;iterations>0;iterations--)
 	{
@@ -138,7 +138,7 @@ void Network::run(int i)
 		}
 	}
 
-	cout << "Finished network run\n";
+	//cout << "Finished network run\n";
 }
 
 
