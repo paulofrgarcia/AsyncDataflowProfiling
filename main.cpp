@@ -9,6 +9,7 @@ int main()
 {
 	Network my_network;
 
+	//Build the network
 	my_network.addActor("a",0,0);
 	my_network.addActor("b",0,1);
 	my_network.addActor("c",0,2);
@@ -23,7 +24,8 @@ int main()
 	my_network.output(0,2);
 
 
-	
+	//Calculate gating rates
+	my_network.calc_gating();
 
 
 	//run for 100 iterations

@@ -33,6 +33,41 @@ Actor::Actor(string n)
 }
 
 
+//Return true if one of the actions connects to output port
+bool Actor::is_output()
+{
+	for(int i=0;i<4;i++)
+	{
+		if(actions[i]->get_target()==NULL)
+			return true;
+	}
+	return false;
+}
+
+Actor *Actor::get_target(int i)
+{
+	if(actions[i])
+		return actions[i]->get_target();
+	else
+		return NULL;
+}
+
+//returns consumption/production rates of action "i"
+double Actor::get_production_rate(int i)
+{
+	if(actions[i])
+		return actions[i]->get_production_rate();
+	else
+		return 0.0;
+}
+double Actor::get_consumption_rate(int i)
+{
+	if(actions[i])
+		return actions[i]->get_consumption_rate();
+	else
+		return 0.0;
+}
+
 //Resets the actor to initial state 
 //Also updates "iter_number"
 void Actor::soft_reset()

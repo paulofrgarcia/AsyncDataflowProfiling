@@ -32,6 +32,12 @@ Action::Action(int l, int in, int out, Actor *a, int p)
 	latency=0;
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
+
+
+	//keep means for gating strategy
+	g_l=l;
+	g_in=in;
+	g_out=in;
 }
 
 Action::Action(int l, int in, int out, int *o)
@@ -56,8 +62,18 @@ Action::Action(int l, int in, int out, int *o)
 	tokensOut=(*tokensOut_gen)(*genO);
 
 	out_cnt = o;
+
+	//keep means for gating strategy
+	g_l=l;
+	g_in=in;
+	g_out=in;
 }
 	
+Actor *Action::get_target()
+{
+	return target;
+}
+
 //returns TRUE if latency is 0
 bool Action::finished()
 {
@@ -109,4 +125,16 @@ void Action::trigger()
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
 }	
+
+
+//returns consumption/production rates
+double Action::get_production_rate()
+{
+	//action firing rate is 1/(action latency mean)
+	return ((double)g_out)/((double)g_l);
+}
+double Action::get_consumption_rate()
+{
+	return ((double)g_in)/((double)g_l);
+}
 

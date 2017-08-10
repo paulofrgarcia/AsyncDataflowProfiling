@@ -39,6 +39,7 @@ class InPort
 class Action
 {
 	private:
+	//we use this to actually simulate the action
 	int latency;
 	int tokensIn;
 	int tokensOut;
@@ -46,6 +47,9 @@ class Action
 	int port;
 	//pointer to output counter
 	int *out_cnt;
+
+	//these are used to guide the gating strategy
+	int g_l, g_in, g_out;
 
 	std::random_device *rdl;
 	std::random_device *rdI;
@@ -71,7 +75,15 @@ class Action
 
 	void trigger();
 
+	//returns consumption/production rates
+	double get_production_rate();
+	double get_consumption_rate();
+
+	//returns the target
+	Actor *get_target();
 };
+
+
 class Actor
 {
 	private:
@@ -132,6 +144,9 @@ class Actor
 	//Check required tokens for action
 	int get_required(int p);
 
+	//Return true if one of the actions connects to output port
+	bool is_output();
+
 	//This function is called at every scheduling cycle
 	//For each action, checks if it is runnable: i.e., if poisson latency is 0
 	//If yes, check if enough tokens to run it, then trigger: this generates new poisson latency
@@ -160,6 +175,12 @@ class Actor
 	//Check if gated
 	bool is_gated();
 
+	//returns target actor of action "i"
+	Actor *get_target(int i);
+	//returns consumption/production rates of action "i"
+	double get_production_rate(int i);
+	double get_consumption_rate(int i);
+
 };
 
 class Network
@@ -168,6 +189,7 @@ class Network
 	//This 10x10 structure is lazy, but really simplifies printing results
 	//Can be updated to allow for arbitrarily large networks in the future
 	Actor *act_array[10][10];
+	bool is_input[10][10];
 
 	public:
 
@@ -202,6 +224,11 @@ class Network
 	
 	//Debug/visualization
 	void print_state();
+
+
+	//determines gating rates for each actor
+	void calc_gating();
+	void compute_forward_ratio(Actor *a);
 
 
 	//Data collection

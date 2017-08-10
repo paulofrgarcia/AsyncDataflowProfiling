@@ -14,7 +14,10 @@ Network::Network()
 	for(int i=0;i<10;i++)
 	{
 		for(int j=0;j<10;j++)
+		{
 			act_array[i][j]=NULL;
+			is_input[i][j]=false;
+		}
 	}
 	for(int i=0;i<100;i++)
 	{
@@ -98,6 +101,7 @@ void Network::output(int i, int j)
 void Network::feed_input(int i, int j, int p, int t)
 {
 	act_array[i][j]->addTokens(p,t);
+	is_input[i][j]=true;
 }
 
 
@@ -175,6 +179,53 @@ void Network::print_statistics()
 	}
 	cout << "Total of " << calculateMean(output_counter) << " tokens output average\n";
 }
+
+
+
+//determines gating rates for each actor
+void Network::calc_gating()
+{
+	//We won't worry about feedback for now, just feed forward
+	//It's simpler, and it will reveal interesting things when we apply to feedback
+
+	//We also ignore multiple paths on same actor for now
+
+
+
+	//we start for every input port
+	for(int i=0;i<10;i++)
+	{
+		for(int j=0;j<10;j++)
+		{
+			if(is_input[i][j])
+			{
+				compute_forward_ratio(act_array[i][j]);
+			}
+		}
+	}
+}
+
+void Network::compute_forward_ratio(Actor *a)
+{
+	double a_throughput_out;
+	double b_throughput_in;
+
+	//we're just using index 0 for now
+
+	if((a->get_target(0))!=NULL)
+	{
+		
+		a_throughput_out=a->get_production_rate(0);
+		b_throughput_in=(a->get_target(0))->get_consumption_rate(0);
+	}	
+	else
+	{
+		//This is terminal actor, just return
+		return;
+	}
+}
+
+
 
 
 

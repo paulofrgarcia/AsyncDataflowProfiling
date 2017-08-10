@@ -34,7 +34,7 @@ int main()
 		my_network.feed_input(0,0,1,5000);
 		my_network.feed_input(0,2,1,5000);
 		//run for 1000 cycles
-		my_network.run(1000);
+		my_network.run(1000,NONE);
 		//soft reset to update counters
 		my_network.soft_reset();
 	}
