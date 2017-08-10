@@ -118,6 +118,8 @@ class Actor
 
 	Actor(string n);
 
+	string get_name();
+
 
 	void soft_reset();
 	//Resets the actor to initial state completely
@@ -214,7 +216,7 @@ class Network
 	//Creates a new connection between two actors at positions i,j and k,l
 	//i.e., creates a new action within actor i,j which outputs to actor k,l
 	//action latencies are default for now, will be updated
-	void connect(int i, int j, int k, int l);
+	void connect(int i, int j, int k, int l, int a_lat, int i_lat, int o_lat);
 	//Creates a new connection to an output port
 	void output(int i, int j);
 	//feeds tokens to a port (used for network input)
@@ -228,7 +230,8 @@ class Network
 
 	//determines gating rates for each actor
 	void calc_gating();
-	void compute_forward_ratio(Actor *a);
+	void compute_forward_ratio(Actor *a, double prop_ratio);
+	double compute_gating_ratio(double a, double b);
 
 
 	//Data collection

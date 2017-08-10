@@ -32,6 +32,11 @@ Actor::Actor(string n)
 	current_time=0;
 }
 
+string Actor::get_name()
+{
+	return name;
+}
+
 
 //Return true if one of the actions connects to output port
 bool Actor::is_output()
@@ -236,6 +241,7 @@ bool Actor::is_gated()
 
 void Actor::gate_actor()
 {
+	cout << "gating...\n";
 	gated=true;
 	current_time=gatetime;
 }

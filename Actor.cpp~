@@ -32,6 +32,11 @@ Actor::Actor(string n)
 	current_time=0;
 }
 
+string Actor::get_name()
+{
+	return name;
+}
+
 
 //Return true if one of the actions connects to output port
 bool Actor::is_output()
@@ -53,14 +58,14 @@ Actor *Actor::get_target(int i)
 }
 
 //returns consumption/production rates of action "i"
-double get_production_rate(int i)
+double Actor::get_production_rate(int i)
 {
 	if(actions[i])
 		return actions[i]->get_production_rate();
 	else
 		return 0.0;
 }
-double get_consumption_rate(int i)
+double Actor::get_consumption_rate(int i)
 {
 	if(actions[i])
 		return actions[i]->get_consumption_rate();

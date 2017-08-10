@@ -71,7 +71,7 @@ void Network::addActor(string n, int i, int j)
 //Creates a new connection between two actors at positions i,j and k,l
 //i.e., creates a new action within actor i,j which outputs to actor k,l
 //action latencies are default for now, will be updated
-void Network::connect(int i, int j, int k, int l)
+void Network::connect(int i, int j, int k, int l, int a_lat, int i_lat, int o_lat)
 {
 	Action *act;
 	if((act_array[i][j]==NULL) || (act_array[k][l]==NULL))
@@ -79,7 +79,7 @@ void Network::connect(int i, int j, int k, int l)
 		cout << "Error: attempting to connect empty actors\n";
 		return;
 	}
-	act = new Action(1,1,1,act_array[k][l],act_array[k][l]->get_free_port());
+	act = new Action(a_lat,i_lat,o_lat,act_array[k][l],act_array[k][l]->get_free_port());
 	act_array[i][j]->addAction(act);
 }
 
@@ -199,33 +199,92 @@ void Network::calc_gating()
 		{
 			if(is_input[i][j])
 			{
-				compute_forward_ratio(act_array[i][j]);
+				cout << "Input actor " << act_array[i][j]->get_name() << "\n";
+				compute_forward_ratio(act_array[i][j],1.0);
 			}
 		}
 	}
 }
 
-void Network::compute_forward_ratio(Actor *a)
+void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 {
 	double a_throughput_out;
 	double b_throughput_in;
 
+	double gating_ratio;
+
+	int runtime, gatetime;
+
 	//we're just using index 0 for now
+
+	cout << "Computing actor " << a->get_name() << "\n";
 
 	if((a->get_target(0))!=NULL)
 	{
 		
 		a_throughput_out=a->get_production_rate(0);
 		b_throughput_in=(a->get_target(0))->get_consumption_rate(0);
+
+		//Does B consume more quickly?
+		if(b_throughput_in > a_throughput_out)
+		{
+			//gate B, and move to next actor
+			gating_ratio = compute_gating_ratio(a_throughput_out, b_throughput_in);
+			
+			//updated with propagated forward ratio from previously gated actors
+			gating_ratio = gating_ratio * prop_ratio;
+
+			//Set actor B run and gate times
+			runtime=(int)(1000/gating_ratio);
+			gatetime=1000-runtime;
+
+			cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
+
+
+			(a->get_target(0))->set_runtime(runtime);
+			(a->get_target(0))->set_gatetime(gatetime);
+
+			//Move on to next actor pair
+			compute_forward_ratio((a->get_target(0)),gating_ratio);
+		}
+		else
+		{
+			//Does A produce more quickly?
+			if(b_throughput_in < a_throughput_out)
+			{
+				//gate A, and propagate back to previous actors
+			}
+			//if they're the same	
+			else
+			{
+				(a->get_target(0))->set_runtime(1000);
+				(a->get_target(0))->set_gatetime(0);
+				//Move on to next actor pair
+				compute_forward_ratio((a->get_target(0)),gating_ratio);
+			}
+		}
 	}	
 	else
 	{
 		//This is terminal actor, just return
+		cout << "Output actor " << a->get_name() << "\n";
 		return;
 	}
 }
 
-
+//This is the function where the different metrics are applied
+//Always assumes B is greater than A, caller must use accordingly
+double Network::compute_gating_ratio(double a, double b)
+{
+	cout << "A " << a << " B " << b << "\n";
+	if(a >= b)
+	{
+		cout << "Calculation error\n";
+		return 1.0;
+	}
+	//just mean ratio
+	return b/a;
+}
 
 
 
