@@ -25,6 +25,11 @@ Actor::Actor(string n)
 		port_taken[i]=false;
 	}
 	gated = false;
+
+	runtime=0;
+	gatetime=0;
+
+	current_time=0;
 }
 
 
@@ -173,7 +178,7 @@ void Actor::run()
 
 int Actor::get_idle_time()
 {
-	return idle[iter_number];
+	return calculateMean(idle);
 }
 
 bool Actor::last_state()
@@ -197,14 +202,18 @@ bool Actor::is_gated()
 void Actor::gate_actor()
 {
 	gated=true;
+	current_time=gatetime;
 }
 void Actor::ungate_actor()
 {
 	gated=false;
+	current_time=runtime;
 }
 
-
-
+int Actor::get_runtime(){return runtime;}
+int Actor::get_gatetime(){return gatetime;}
+int Actor::get_current_time(){return current_time;}
+void Actor::dec_current_time(){current_time--;}
 
 
 

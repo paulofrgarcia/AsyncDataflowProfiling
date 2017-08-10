@@ -15,6 +15,14 @@ class Actor;
 class Network;
 
 
+//defines the gating strategy to apply
+#define NONE	0
+#define MEANS	1
+#define	KL	2
+
+
+
+
 class InPort
 {
 	private:
@@ -88,6 +96,12 @@ class Actor
 	//If set, actor is not scheduled to run
 	bool gated;
 
+	//gating controls
+	int runtime;
+	int gatetime;
+
+	int current_time;
+
 	public:
 
 	Actor(string n);
@@ -129,8 +143,12 @@ class Actor
 	//Gating functions
 	void gate_actor();
 	void ungate_actor();
-
-
+	int get_runtime();
+	int get_gatetime();
+	int get_current_time();
+	void dec_current_time();
+	void set_runtime(int t);
+	void set_gatetime(int t);
 
 
 	//Data collection functions
@@ -179,8 +197,8 @@ class Network
 	void output(int i, int j);
 	//feeds tokens to a port (used for network input)
 	void feed_input(int i, int j, int p, int t);
-	//runs the network for a certain number of iterations
-	void run(int i);
+	//runs the network for a certain number of iterations using a gating strategy
+	void run(int i, int strategy);
 	
 	//Debug/visualization
 	void print_state();

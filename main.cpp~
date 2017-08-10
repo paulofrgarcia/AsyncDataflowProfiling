@@ -27,7 +27,7 @@ int main()
 
 
 	//run for 100 iterations
-	for(int i=0;i<1;i++)
+	for(int i=0;i<100;i++)
 	{
 		//feed input
 		my_network.feed_input(0,0,0,5000);

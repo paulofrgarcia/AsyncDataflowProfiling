@@ -25,6 +25,11 @@ Actor::Actor(string n)
 		port_taken[i]=false;
 	}
 	gated = false;
+
+	runtime=0;
+	gatetime=0;
+
+	current_time=0;
 }
 
 
@@ -197,15 +202,27 @@ bool Actor::is_gated()
 void Actor::gate_actor()
 {
 	gated=true;
+	current_time=gatetime;
 }
 void Actor::ungate_actor()
 {
 	gated=false;
+	current_time=runtime;
 }
 
+int Actor::get_runtime(){return runtime;}
+int Actor::get_gatetime(){return gatetime;}
+int Actor::get_current_time(){return current_time;}
+void Actor::dec_current_time(){current_time--;}
 
-
-
+void Actor::set_runtime(int t)
+{
+	runtime=t;
+}
+void Actor::set_gatetime(int t)
+{
+	gatetime=t;
+}
 
 
 

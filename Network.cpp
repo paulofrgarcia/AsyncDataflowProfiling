@@ -107,7 +107,7 @@ void Network::feed_input(int i, int j, int p, int t)
 
 
 //runs the network for a certain number of iterations
-void Network::run(int i)
+void Network::run(int i, int strategy)
 {
 	int iterations;
 	
@@ -124,14 +124,33 @@ void Network::run(int i)
 			{
 				if(act_array[i][j])
 				{
-					if(!(act_array[i][j]->is_gated()))
+					if(strategy==NONE)
 					{
-						//check if should gate
 						act_array[i][j]->run();
-					}	
+					}
 					else
 					{
-						//check if should ungate
+						if(!(act_array[i][j]->is_gated()))
+						{
+							//check if should gate
+							act_array[i][j]->run();
+							act_array[i][j]->dec_current_time();
+
+							if(act_array[i][j]->get_current_time() == 0)
+							{
+								act_array[i][j]->gate_actor();
+							}
+						}	
+						else
+						{
+							//check if should ungate
+							act_array[i][j]->dec_current_time();
+
+							if(act_array[i][j]->get_current_time() == 0)
+							{
+								act_array[i][j]->ungate_actor();
+							}
+						}
 					}
 				}
 			}

@@ -6,7 +6,7 @@ RM=rm -f
 #LDLIBS=$(shell root-config --libs)
 
 SRCS=main.cpp Actor.cpp Action.cpp InPort.cpp Network.cpp helper.cpp
-OBJS=$(subst .cc,.o,$(SRCS))
+OBJS=$(subst .cpp,.o,$(SRCS))
 
 all: test
 
