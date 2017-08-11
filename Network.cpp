@@ -228,19 +228,20 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 		
 
 		//Does B consume more quickly?
-		if(b_throughput_in > a_throughput_out)
+		if(b_throughput_in > (a_throughput_out* prop_ratio))
 		{
 			//gate B, and move to next actor
-			gating_ratio = compute_gating_ratio(a_throughput_out, b_throughput_in);
+			gating_ratio = compute_gating_ratio((a_throughput_out), b_throughput_in);
 			
 			//updated with propagated forward ratio from previously gated actors
 			gating_ratio = gating_ratio * prop_ratio;
 
 			//Set actor B run and gate times
-			runtime=(int)(1000/gating_ratio);
+			runtime=(int)(1000*gating_ratio);
 			gatetime=1000-runtime;
 
 			cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
+			cout << "Propagating " << gating_ratio << "\n";
 
 
 			(a->get_target(0))->set_runtime(runtime);
@@ -256,6 +257,7 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 			if(b_throughput_in < a_throughput_out)
 			{
 				//gate A, and propagate back to previous actors
+				
 			}
 			//if they're the same	
 			else
@@ -276,17 +278,12 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 }
 
 //This is the function where the different metrics are applied
-//Always assumes B is greater than A, caller must use accordingly
 double Network::compute_gating_ratio(double a, double b)
 {
+	cout << "A " << a << " B " << b << "\n";
 	
-	if(a >= b)
-	{
-		cout << "Calculation error\n";
-		return 1.0;
-	}
 	//just mean ratio
-	return b/a;
+	return a/b;
 }
 
 
