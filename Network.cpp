@@ -84,7 +84,7 @@ void Network::connect(int i, int j, int k, int l, int a_lat, int i_lat, int o_la
 }
 
 //Creates a new connection to an output port
-void Network::output(int i, int j)
+void Network::output(int i, int j, int a_lat, int i_lat, int o_lat)
 {
 	Action *act;
 	if(act_array[i][j]==NULL)
@@ -92,7 +92,7 @@ void Network::output(int i, int j)
 		cout << "Error: attempting to connect empty actor\n";
 		return;
 	}
-	act = new Action(1,1,1,&(output_counter[iter_number]));
+	act = new Action(a_lat,i_lat,o_lat,&(output_counter[iter_number]));
 	act_array[i][j]->addAction(act);
 }
 
@@ -225,6 +225,8 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 		a_throughput_out=a->get_production_rate(0);
 		b_throughput_in=(a->get_target(0))->get_consumption_rate(0);
 
+		
+
 		//Does B consume more quickly?
 		if(b_throughput_in > a_throughput_out)
 		{
@@ -249,6 +251,7 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 		}
 		else
 		{
+			
 			//Does A produce more quickly?
 			if(b_throughput_in < a_throughput_out)
 			{
@@ -276,7 +279,7 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 //Always assumes B is greater than A, caller must use accordingly
 double Network::compute_gating_ratio(double a, double b)
 {
-	cout << "A " << a << " B " << b << "\n";
+	
 	if(a >= b)
 	{
 		cout << "Calculation error\n";

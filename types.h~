@@ -216,7 +216,7 @@ class Network
 	//Creates a new connection between two actors at positions i,j and k,l
 	//i.e., creates a new action within actor i,j which outputs to actor k,l
 	//action latencies are default for now, will be updated
-	void connect(int i, int j, int k, int l);
+	void connect(int i, int j, int k, int l, int a_lat, int i_lat, int o_lat);
 	//Creates a new connection to an output port
 	void output(int i, int j);
 	//feeds tokens to a port (used for network input)
