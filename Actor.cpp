@@ -57,6 +57,19 @@ Actor *Actor::get_target(int i)
 		return NULL;
 }
 
+
+//returns actor which targets input port "i"
+Actor *Actor::get_previous(int i)
+{
+	//TODO
+}
+
+
+
+
+
+
+
 //returns consumption/production rates of action "i"
 double Actor::get_production_rate(int i)
 {

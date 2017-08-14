@@ -231,7 +231,7 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 		if(b_throughput_in > (a_throughput_out* prop_ratio))
 		{
 			//gate B, and move to next actor
-			gating_ratio = compute_gating_ratio((a_throughput_out), b_throughput_in);
+			gating_ratio = compute_gating_ratio(a_throughput_out, b_throughput_in);
 			
 			//updated with propagated forward ratio from previously gated actors
 			gating_ratio = gating_ratio * prop_ratio;
@@ -254,18 +254,38 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 		{
 			
 			//Does A produce more quickly?
-			if(b_throughput_in < a_throughput_out)
+			if(b_throughput_in < (a_throughput_out* prop_ratio))
 			{
 				//gate A, and propagate back to previous actors
+				double tmp_gating_ratio = compute_gating_ratio(b_throughput_in, a_throughput_out);
+				//updated with propagated forward ratio from previously gated actors
+				gating_ratio = tmp_gating_ratio * prop_ratio;
+
+				runtime=(int)(1000*gating_ratio);
+				gatetime=1000-runtime;
+
+				a->set_runtime(runtime);
+				a->set_gatetime(gatetime);
+
+				//Propagate back, unless "a" is input actor
+				if((a->get_previous(0)!=NULL)
+					propagate_backward_ratio((a->get_previous(0)), tmp_gating_ratio);
+
+
+				//Move on to next actor pair, propagated ratio back to unity
+				compute_forward_ratio((a->get_target(0)),1.0);
 				
 			}
 			//if they're the same	
 			else
 			{
-				(a->get_target(0))->set_runtime(1000);
-				(a->get_target(0))->set_gatetime(0);
-				//Move on to next actor pair
-				compute_forward_ratio((a->get_target(0)),gating_ratio);
+				runtime=(int)(1000*prop_ratio);
+				gatetime=1000-runtime;
+				//Just have to apply the currently propagated gating ratio
+				(a->get_target(0))->set_runtime(runtime);
+				(a->get_target(0))->set_gatetime(gatetime);
+				//Move on to next actor pair, same propagated ratio
+				compute_forward_ratio((a->get_target(0)),prop_ratio);
 			}
 		}
 	}	
@@ -277,16 +297,38 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 	}
 }
 
+void Network::propagate_backward_ratio(Actor *a, double prop_ratio)
+{
+	//Get current gating ratio
+	double current_ratio = 1000.0 / ((double)(a->get_runtime()));
+
+	current_ratio = current_ratio * prop_ratio;
+
+	runtime=(int)(1000*current_ratio);
+	gatetime=1000-runtime;
+
+	a->set_runtime(runtime);
+	a->set_gatetime(gatetime);
+
+	//Propagate back
+	if((a->get_previous(0)!=NULL)
+		propagate_backward_ratio((a->get_previous(0)), tmp_gating_ratio);
+}
+
+
+
+
+
+
+
+
+
 //This is the function where the different metrics are applied
-//Always assumes B is greater than A, caller must use accordingly
+//For now, just simple ratio of means
 double Network::compute_gating_ratio(double a, double b)
 {
 	cout << "A " << a << " B " << b << "\n";
-	if(a >= b)
-	{
-		cout << "Calculation error\n";
-		return 1.0;
-	}
+	
 	//just mean ratio
 	return a/b;
 }

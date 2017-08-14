@@ -179,6 +179,9 @@ class Actor
 
 	//returns target actor of action "i"
 	Actor *get_target(int i);
+	//returns actor which targets input port "i"
+	Actor *get_previous(int i);
+
 	//returns consumption/production rates of action "i"
 	double get_production_rate(int i);
 	double get_consumption_rate(int i);
@@ -230,6 +233,7 @@ class Network
 	//determines gating rates for each actor
 	void calc_gating();
 	void compute_forward_ratio(Actor *a, double prop_ratio);
+	void propagate_backward_ratio(Actor *a, double prop_ratio);
 	double compute_gating_ratio(double a, double b);
 
 
