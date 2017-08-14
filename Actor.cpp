@@ -23,10 +23,11 @@ Actor::Actor(string n)
 	{
 		actions[i]=NULL;
 		port_taken[i]=false;
+		previous[i]=NULL;
 	}
 	gated = false;
 
-	runtime=0;
+	runtime=1000;
 	gatetime=0;
 
 	current_time=0;
@@ -61,10 +62,13 @@ Actor *Actor::get_target(int i)
 //returns actor which targets input port "i"
 Actor *Actor::get_previous(int i)
 {
-	//TODO
+	return previous[i];
 }
 
-
+void Actor::set_previous(Actor *a,int p)
+{
+	previous[p] = a;
+}
 
 
 

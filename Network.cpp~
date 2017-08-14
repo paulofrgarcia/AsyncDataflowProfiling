@@ -74,13 +74,17 @@ void Network::addActor(string n, int i, int j)
 void Network::connect(int i, int j, int k, int l, int a_lat, int i_lat, int o_lat)
 {
 	Action *act;
+	int port;
 	if((act_array[i][j]==NULL) || (act_array[k][l]==NULL))
 	{
 		cout << "Error: attempting to connect empty actors\n";
 		return;
 	}
-	act = new Action(a_lat,i_lat,o_lat,act_array[k][l],act_array[k][l]->get_free_port());
+	port = act_array[k][l]->get_free_port();
+	act = new Action(a_lat,i_lat,o_lat,act_array[k][l],port);
 	act_array[i][j]->addAction(act);
+
+	act_array[k][l]->set_previous(act_array[i][j],port);
 }
 
 //Creates a new connection to an output port
@@ -219,6 +223,8 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 
 	cout << "Computing actor " << a->get_name() << "\n";
 
+	//cout << "Previous " << a->get_previous(0)->get_name() << " next " << a->get_target(0)->get_name() << "\n";
+
 	if((a->get_target(0))!=NULL)
 	{
 		
@@ -241,7 +247,7 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 			gatetime=1000-runtime;
 
 			cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
-			cout << "Propagating " << gating_ratio << "\n";
+			cout << "Propagating " << gating_ratio << " forward\n";
 
 
 			(a->get_target(0))->set_runtime(runtime);
@@ -264,11 +270,14 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 				runtime=(int)(1000*gating_ratio);
 				gatetime=1000-runtime;
 
+				cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
+				cout << "Propagating " << gating_ratio << " backward\n";
+
 				a->set_runtime(runtime);
 				a->set_gatetime(gatetime);
 
 				//Propagate back, unless "a" is input actor
-				if((a->get_previous(0)!=NULL)
+				if((a->get_previous(0))!=NULL)
 					propagate_backward_ratio((a->get_previous(0)), tmp_gating_ratio);
 
 
@@ -300,19 +309,26 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 void Network::propagate_backward_ratio(Actor *a, double prop_ratio)
 {
 	//Get current gating ratio
+	int runtime, gatetime;
 	double current_ratio = 1000.0 / ((double)(a->get_runtime()));
+
+	cout << "Computing actor " << a->get_name() << "\n";
+	cin >> runtime;
 
 	current_ratio = current_ratio * prop_ratio;
 
 	runtime=(int)(1000*current_ratio);
 	gatetime=1000-runtime;
 
+	cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
+	cout << "Propagating " << prop_ratio << " backward\n";
+
 	a->set_runtime(runtime);
 	a->set_gatetime(gatetime);
 
 	//Propagate back
-	if((a->get_previous(0)!=NULL)
-		propagate_backward_ratio((a->get_previous(0)), tmp_gating_ratio);
+	if((a->get_previous(0))!=NULL)
+		propagate_backward_ratio((a->get_previous(0)), prop_ratio);
 }
 
 

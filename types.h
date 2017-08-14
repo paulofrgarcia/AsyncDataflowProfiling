@@ -95,6 +95,7 @@ class Actor
 	InPort ports[4];
 	bool port_taken[4];
 	Action* actions[4];
+	Actor* previous[4];
 
 	//record the number of cycles the actor was completely idle, i.e., no actions to fire
 	//We'll run the network 100 times to get mean and standard variation for each result
@@ -181,6 +182,8 @@ class Actor
 	Actor *get_target(int i);
 	//returns actor which targets input port "i"
 	Actor *get_previous(int i);
+	//sets actor which targets input port "p"
+	void set_previous(Actor *a,int p);
 
 	//returns consumption/production rates of action "i"
 	double get_production_rate(int i);
