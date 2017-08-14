@@ -16,7 +16,7 @@ int main()
 	my_network.addActor("d",0,3);
 
 	my_network.connect(0,0,0,1,10,8,8);
-	my_network.connect(0,1,0,2,10,8,8);
+	my_network.connect(0,1,0,2,10,7,7);
 	my_network.connect(0,2,0,3,10,8,8);
 	
 	my_network.output(0,3,10,5,5);

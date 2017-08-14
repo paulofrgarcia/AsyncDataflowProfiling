@@ -221,7 +221,7 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 
 	//we're just using index 0 for now
 
-	cout << "Computing actor " << a->get_name() << "\n";
+	//cout << "Computing actor " << a->get_name() << "\n";
 
 	//cout << "Previous " << a->get_previous(0)->get_name() << " next " << a->get_target(0)->get_name() << "\n";
 
@@ -246,8 +246,8 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 			runtime=(int)(1000*gating_ratio);
 			gatetime=1000-runtime;
 
-			cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
-			cout << "Propagating " << gating_ratio << " forward\n";
+			cout << "Actor " << a->get_target(0)->get_name() << "runtime " << runtime << " gatetime " << gatetime <<"\n";
+			//cout << "Propagating " << gating_ratio << " forward\n";
 
 
 			(a->get_target(0))->set_runtime(runtime);
@@ -270,8 +270,8 @@ void Network::compute_forward_ratio(Actor *a, double prop_ratio)
 				runtime=(int)(1000*gating_ratio);
 				gatetime=1000-runtime;
 
-				cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
-				cout << "Propagating " << gating_ratio << " backward\n";
+				cout << "Actor " << a->get_name() << "runtime " << runtime << " gatetime " << gatetime <<"\n";
+				//cout << "Propagating " << gating_ratio << " backward\n";
 
 				a->set_runtime(runtime);
 				a->set_gatetime(gatetime);
@@ -312,16 +312,16 @@ void Network::propagate_backward_ratio(Actor *a, double prop_ratio)
 	int runtime, gatetime;
 	double current_ratio = 1000.0 / ((double)(a->get_runtime()));
 
-	cout << "Computing actor " << a->get_name() << "\n";
-	cin >> runtime;
+	//cout << "Computing actor " << a->get_name() << "\n";
+	//cin >> runtime;
 
 	current_ratio = current_ratio * prop_ratio;
 
 	runtime=(int)(1000*current_ratio);
 	gatetime=1000-runtime;
 
-	cout << "Computed runtime " << runtime << " gatetime " << gatetime <<"\n";
-	cout << "Propagating " << prop_ratio << " backward\n";
+	cout << "Actor " << a->get_name() << "runtime " << runtime << " gatetime " << gatetime <<"\n";
+	//cout << "Propagating " << prop_ratio << " backward\n";
 
 	a->set_runtime(runtime);
 	a->set_gatetime(gatetime);
