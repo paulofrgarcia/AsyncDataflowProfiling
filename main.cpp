@@ -40,6 +40,24 @@ int main()
 		my_network.soft_reset();
 	}
 	my_network.print_statistics();
+
+	my_network.hard_reset();
+
+	my_network.feed_input(0,0,0,50000);
+
+	//run for 100 iterations
+	for(int i=0;i<100;i++)
+	{
+		
+		my_network.feed_input(0,0,0,50000);
+		//run for 1000 cycles
+		my_network.run(100000,NONE);
+		//soft reset to update counters
+		my_network.soft_reset();
+	}
+	my_network.print_statistics();
+
+
 	/*
 	Data collection:
 

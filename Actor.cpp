@@ -14,7 +14,7 @@ Actor::Actor(string n)
 
 	for(int i=0;i<100;i++)
 	{
-		idle[iter_number]=0;
+		idle[i]=0;
 	}
 	iter_number=0;
 
@@ -108,9 +108,13 @@ void Actor::hard_reset()
 {
 	was_idle=false;
 	gated = false;
+	for(int i=0;i<4;i++)
+	{
+		ports[i].clearTokens();
+	}
 	for(int i=0;i<100;i++)
 	{
-		idle[iter_number]=0;
+		idle[i]=0;
 	}
 	iter_number=0;
 }

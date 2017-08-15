@@ -16,14 +16,14 @@ int main()
 	my_network.addActor("d",0,3);
 
 	my_network.connect(0,0,0,1,1,10,10);
-	my_network.connect(0,1,0,2,1,9,9);
+	my_network.connect(0,1,0,2,1,8,8);
 	my_network.connect(0,2,0,3,1,10,10);
 	
-	my_network.output(0,3,1,5,5);
+	my_network.output(0,3,1,4,4);
 
 
 	//feed input
-	my_network.feed_input(0,0,0,50000);
+	//my_network.feed_input(0,0,0,50000);
 
 	//Calculate gating rates
 	my_network.calc_gating();
@@ -40,6 +40,22 @@ int main()
 		my_network.soft_reset();
 	}
 	my_network.print_statistics();
+
+	my_network.hard_reset();
+
+	//run for 100 iterations
+	for(int i=0;i<100;i++)
+	{
+		
+		my_network.feed_input(0,0,0,50000);
+		//run for 1000 cycles
+		my_network.run(100000,NONE);
+		//soft reset to update counters
+		my_network.soft_reset();
+	}
+	my_network.print_statistics();
+
+
 	/*
 	Data collection:
 
