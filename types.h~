@@ -233,8 +233,8 @@ class Network
 	void print_state();
 
 
-	//determines gating rates for each actor
-	void calc_gating();
+	//determines gating rates for each actor accoridng to a strategy
+	void calc_gating(int type);
 	void compute_forward_ratio(Actor *a, double prop_ratio);
 	void propagate_backward_ratio(Actor *a, double prop_ratio);
 	double compute_gating_ratio(double a, double b);

@@ -25,10 +25,10 @@ int main()
 	//feed input
 	my_network.feed_input(0,0,0,50000);
 
-	//Calculate gating rates
-	my_network.calc_gating();
+	
 
 
+	cout << "\n\nRunning without gating\n"; 
 	//run for 100 iterations
 	for(int i=0;i<100;i++)
 	{
@@ -45,18 +45,43 @@ int main()
 
 	my_network.feed_input(0,0,0,50000);
 
+	//Calculate gating rates
+	cout << "\n\nCalculating MEAN gating times:\n"; 
+	my_network.calc_gating(MEANS);
+
+	cout << "\n\nRunning with gating\n";
 	//run for 100 iterations
 	for(int i=0;i<100;i++)
 	{
 		
 		my_network.feed_input(0,0,0,50000);
 		//run for 1000 cycles
-		my_network.run(100000,NONE);
+		my_network.run(100000,MEANS);
 		//soft reset to update counters
 		my_network.soft_reset();
 	}
 	my_network.print_statistics();
 
+	my_network.hard_reset();
+
+	my_network.feed_input(0,0,0,50000);
+
+	//Calculate gating rates
+	cout << "\n\nCalculating KL gating times:\n"; 
+	my_network.calc_gating(KL);
+
+	cout << "\n\nRunning with gating\n";
+	//run for 100 iterations
+	for(int i=0;i<100;i++)
+	{
+		
+		my_network.feed_input(0,0,0,50000);
+		//run for 1000 cycles
+		my_network.run(100000,KL);
+		//soft reset to update counters
+		my_network.soft_reset();
+	}
+	my_network.print_statistics();
 
 	/*
 	Data collection:

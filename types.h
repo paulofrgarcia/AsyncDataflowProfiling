@@ -199,6 +199,9 @@ class Network
 	Actor *act_array[10][10];
 	bool is_input[10][10];
 
+	//type of gating strategy to apply
+	int calc_type;
+
 	public:
 
 	//We'll run the network 100 times to get mean and standard variation for each result
@@ -233,8 +236,8 @@ class Network
 	void print_state();
 
 
-	//determines gating rates for each actor
-	void calc_gating();
+	//determines gating rates for each actor accoridng to a strategy
+	void calc_gating(int type);
 	void compute_forward_ratio(Actor *a, double prop_ratio);
 	void propagate_backward_ratio(Actor *a, double prop_ratio);
 	double compute_gating_ratio(double a, double b);

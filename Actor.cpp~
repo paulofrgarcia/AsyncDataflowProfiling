@@ -280,6 +280,7 @@ void Actor::dec_current_time(){current_time--;}
 void Actor::set_runtime(int t)
 {
 	runtime=t;
+	current_time=runtime;
 }
 void Actor::set_gatetime(int t)
 {

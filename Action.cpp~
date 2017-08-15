@@ -69,6 +69,11 @@ Action::Action(int l, int in, int out, int *o)
 	g_out=in;
 }
 	
+Actor *Action::get_target()
+{
+	return target;
+}
+
 //returns TRUE if latency is 0
 bool Action::finished()
 {
@@ -115,8 +120,8 @@ int Action::requiredTokens()
 
 void Action::trigger()
 {
-	
-	latency=(*latency_gen)(*genl);
+	//ensure we never have 0 latency (i.e., 0-truncated Poisson distribtion)
+	latency=(*latency_gen)(*genl)+1;
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
 }	

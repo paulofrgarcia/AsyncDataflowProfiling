@@ -120,8 +120,8 @@ int Action::requiredTokens()
 
 void Action::trigger()
 {
-	
-	latency=(*latency_gen)(*genl);
+	//ensure we never have 0 latency (i.e., 0-truncated Poisson distribution)
+	latency=(*latency_gen)(*genl)+1;
 	tokensIn=(*tokensIn_gen)(*genI);
 	tokensOut=(*tokensOut_gen)(*genO);
 }	

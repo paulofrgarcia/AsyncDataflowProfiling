@@ -123,6 +123,7 @@ void Network::run(int i, int strategy)
 
 	//cout << "Starting network run.....\n";
 
+
 	for(iterations=i;iterations>0;iterations--)
 	{
 		//print_state();
@@ -138,6 +139,7 @@ void Network::run(int i, int strategy)
 					}
 					else
 					{
+						
 						if(!(act_array[i][j]->is_gated()))
 						{
 							//check if should gate
@@ -146,11 +148,13 @@ void Network::run(int i, int strategy)
 
 							if(act_array[i][j]->get_current_time() == 0)
 							{
+								//cout << "network gating\n";
 								act_array[i][j]->gate_actor();
 							}
 						}	
 						else
 						{
+							//cout << "else";
 							//check if should ungate
 							act_array[i][j]->dec_current_time();
 
@@ -187,13 +191,13 @@ void Network::print_statistics()
 
 
 //determines gating rates for each actor
-void Network::calc_gating()
+void Network::calc_gating(int type)
 {
 	//We won't worry about feedback for now, just feed forward
 	//It's simpler, and it will reveal interesting things when we apply to feedback
 
 	//We also ignore multiple paths on same actor for now
-
+	calc_type = type;
 
 
 	//we start for every input port
@@ -344,9 +348,18 @@ void Network::propagate_backward_ratio(Actor *a, double prop_ratio)
 double Network::compute_gating_ratio(double a, double b)
 {
 	cout << "A " << a << " B " << b << "\n";
-	
-	//just mean ratio
-	return a/b;
+
+	cout << "Mean " << a/b << " KL " << (b - a + a*(log10(a/b))) << "\n";	
+
+	if(calc_type==KL)
+	{
+		return (b - a + a*(log10(a/b)));
+	}
+	else
+	{
+		//just mean ratio
+		return a/b;
+	}
 }
 
 

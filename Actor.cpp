@@ -262,7 +262,7 @@ bool Actor::is_gated()
 
 void Actor::gate_actor()
 {
-	cout << "gating...\n";
+	//cout << "gating...\n";
 	gated=true;
 	current_time=gatetime;
 }
@@ -280,6 +280,7 @@ void Actor::dec_current_time(){current_time--;}
 void Actor::set_runtime(int t)
 {
 	runtime=t;
+	current_time=runtime;
 }
 void Actor::set_gatetime(int t)
 {
