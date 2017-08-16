@@ -5,29 +5,34 @@
 using namespace std;
 
 
+void build_forward_network(Network *my_network)
+{
+	//Build the network
+	my_network->addActor("a",0,0);
+	my_network->addActor("b",0,1);
+	my_network->addActor("c",0,2);
+	my_network->addActor("d",0,3);
+
+	my_network->connect(0,0,0,1,1,10,10);
+	my_network->connect(0,1,0,2,1,8,8);
+	my_network->connect(0,2,0,3,1,10,10);
+	
+	my_network->output(0,3,1,4,4);
+
+}
+
+
+
 int main()
 {
 	Network my_network;
 
-	//Build the network
-	my_network.addActor("a",0,0);
-	my_network.addActor("b",0,1);
-	my_network.addActor("c",0,2);
-	my_network.addActor("d",0,3);
-
-	my_network.connect(0,0,0,1,1,10,10);
-	my_network.connect(0,1,0,2,1,8,8);
-	my_network.connect(0,2,0,3,1,10,10);
-	
-	my_network.output(0,3,1,4,4);
+	build_forward_network(&my_network);
 
 
-	//feed input
+
+	//Ungated run
 	my_network.feed_input(0,0,0,50000);
-
-	
-
-
 	cout << "\n\nRunning without gating\n"; 
 	//run for 100 iterations
 	for(int i=0;i<100;i++)
@@ -40,15 +45,15 @@ int main()
 		my_network.soft_reset();
 	}
 	my_network.print_statistics();
-
 	my_network.hard_reset();
 
-	my_network.feed_input(0,0,0,50000);
 
+
+	//Mean gating run
+	my_network.feed_input(0,0,0,50000);
 	//Calculate gating rates
 	cout << "\n\nCalculating MEAN gating times:\n"; 
 	my_network.calc_gating(MEANS);
-
 	cout << "\n\nRunning with gating\n";
 	//run for 100 iterations
 	for(int i=0;i<100;i++)
@@ -61,15 +66,15 @@ int main()
 		my_network.soft_reset();
 	}
 	my_network.print_statistics();
-
 	my_network.hard_reset();
 
-	my_network.feed_input(0,0,0,50000);
 
+
+	//KL gating run
+	my_network.feed_input(0,0,0,50000);
 	//Calculate gating rates
 	cout << "\n\nCalculating KL gating times:\n"; 
 	my_network.calc_gating(KL);
-
 	cout << "\n\nRunning with gating\n";
 	//run for 100 iterations
 	for(int i=0;i<100;i++)
