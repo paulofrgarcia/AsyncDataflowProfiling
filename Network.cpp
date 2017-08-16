@@ -347,13 +347,13 @@ void Network::propagate_backward_ratio(Actor *a, double prop_ratio)
 //For now, just simple ratio of means
 double Network::compute_gating_ratio(double a, double b)
 {
-	cout << "A " << a << " B " << b << "\n";
+	//cout << "A " << a << " B " << b << "\n";
 
-	cout << "Mean " << a/b << " KL " << (b - a + a*(log10(a/b))) << "\n";	
+	//cout << "Mean " << a/b << " KL " << 1/(b - a + a*(log10(a/b))) << "\n";	
 
 	if(calc_type==KL)
 	{
-		return (b - a + a*(log10(a/b)));
+		return 1/(b - a + a*(log10(a/b)));
 	}
 	else
 	{
