@@ -4,8 +4,8 @@
 
 using namespace std;
 
-
-void build_forward_network(Network *my_network)
+//no feedback, no divergence, no convergence
+void build_nnn_network(Network *my_network)
 {
 	//Build the network
 	my_network->addActor("a",0,0);
@@ -21,13 +21,36 @@ void build_forward_network(Network *my_network)
 
 }
 
+//no feedback, no divergence, convergence
+void build_nny_network(Network *my_network)
+{
+	//Build the network
+	my_network->addActor("a",0,0);
+	my_network->addActor("b",1,0);
+	my_network->addActor("c",0,1);
+	my_network->addActor("d",0,2);
+
+	my_network->connect(0,0,0,1,1,10,10);
+	my_network->connect(1,0,0,1,1,8,8);
+	my_network->connect(0,1,0,2,1,10,10);
+	
+	my_network->output(0,2,1,4,4);
+
+}
+//no feedback, divergence, no convergence
+//no feedback, divergence, convergence
+//feedback, no divergence, no convergence
+//feedback, no divergence, convergence
+//feedback, divergence, no convergence
+//feedback, divergence, convergence
+
 
 
 int main()
 {
 	Network my_network;
 
-	build_forward_network(&my_network);
+	build_nnn_network(&my_network);
 
 
 
